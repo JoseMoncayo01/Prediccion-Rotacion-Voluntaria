@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import math
 import streamlit as st
+from pathlib import Path
 
 
 st.set_page_config(
@@ -217,7 +218,14 @@ expresada como un porcentaje entre 0 % y 100 %.
 """)
 
 
-df = pd.read_csv("HR-Employee-Attrition.csv")
+# Carga dinámica del dataset buscando en data/ o en el directorio actual
+RUTA_DATOS = Path(__file__).resolve().parent.parent / "data" / "HR-Employee-Attrition.csv"
+if not RUTA_DATOS.exists():
+    RUTA_DATOS = Path("data/HR-Employee-Attrition.csv")
+if not RUTA_DATOS.exists():
+    RUTA_DATOS = Path("HR-Employee-Attrition.csv")
+
+df = pd.read_csv(RUTA_DATOS)
 
 # ============================================================
 # 5. ANÁLISIS EXPLORATORIO DE DATOS
