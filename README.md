@@ -122,5 +122,14 @@ streamlit run python/app.py
 ---
 
 ## 👥 Autores y Créditos
-- **Universidad ICESI**
+
+- **Jose David Moncayo**
+- **Juan Jose Castillo**
+- **Alex Salazar**
+- **Jorge Baena**
+- **Juan Camilo Vargas**
+
+---
+- **Institución:** Universidad ICESI
 - **Asignatura:** Análisis de Datos I
+
