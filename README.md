@@ -25,25 +25,31 @@ El proyecto está organizado de la siguiente manera:
 
 ```text
 Prediccion-Rotacion-Voluntaria/
+├── arquitectura/
+│   └── arquitectura_datos_hipotetica.png         # Diagrama de arquitectura de datos (Medallón + MLOps)
 ├── data/
-│   └── HR-Employee-Attrition.csv                     # Dataset de IBM HR Analytics (1.470 registros, 35 variables)
+│   └── HR-Employee-Attrition.csv                 # Dataset de IBM HR Analytics (1.470 registros, 35 variables)
 ├── notebook/
 │   └── Prediccion_Rotacion_Voluntaria_Notebook.ipynb # Notebook interactivo con EDA y modelo de Machine Learning
 ├── python/
-│   └── app.py                                        # Aplicación web interactiva en Streamlit
-├── .gitignore                                        # Configuración de archivos ignorados por Git
-└── README.md                                         # Documentación general del repositorio
+│   └── app.py                                    # Aplicación web interactiva en Streamlit
+├── .gitignore                                    # Configuración de archivos ignorados por Git
+└── README.md                                     # Documentación general del repositorio
 ```
 
 ### Contenido de cada carpeta:
 
-1. **[`data/`](file:///C:/Users/J/Desktop/ICESI/Analisis%20de%20Datos/Prediccion-Rotacion-Voluntaria/data)**:
+1. **[`arquitectura/`](arquitectura)**:
+   - Contiene el diagrama de diseño conceptual y metodológico de la solución (`arquitectura_datos_hipotetica.png`).
+   - Modela el flujo *end-to-end* integrando la Arquitectura Medallón (Bronce, Plata, Oro), el análisis bivariado, el ciclo de entrenamiento MLOps y la capa de consumo en Streamlit.
+
+2. **[`data/`](data)**:
    - Contiene el conjunto de datos `HR-Employee-Attrition.csv` (IBM HR Analytics de Kaggle).
    - Consta de **1.470 observaciones** y **35 variables** numéricas y categóricas.
    - Sin registros duplicados ni valores faltantes.
    - Variable objetivo: `Attrition` (`rotacion`): *Yes* (renuncia) o *No* (permanece).
 
-2. **[`notebook/`](file:///C:/Users/J/Desktop/ICESI/Analisis%20de%20Datos/Prediccion-Rotacion-Voluntaria/notebook)**:
+3. **[`notebook/`](notebook)**:
    - Contiene el cuaderno `Prediccion_Rotacion_Voluntaria_Notebook.ipynb`.
    - Incluye el flujo completo de:
      - Estandarización y renombrado de variables al español.
@@ -52,9 +58,44 @@ Prediccion-Rotacion-Voluntaria/
      - Entrenamiento y evaluación de un modelo de **Regresión Logística** (`LogisticRegression`).
      - Matriz de confusión, reporte de clasificación y ranking de empleados con mayor riesgo de rotación.
 
-3. **[`python/`](file:///C:/Users/J/Desktop/ICESI/Analisis%20de%20Datos/Prediccion-Rotacion-Voluntaria/python)**:
+4. **[`python/`](python)**:
    - Contiene la aplicación web `app.py` desarrollada con **Streamlit**.
    - Presenta de forma visual, ejecutiva e interactiva todas las secciones: contexto del problema, indicadores KPI, visualizaciones del EDA, métricas del modelo y tabla interactiva de probabilidades de rotación.
+
+---
+
+## 🏗️ Arquitectura de Datos y Flujo de Trabajo (Medallón + MLOps)
+
+A continuación se presenta el diseño de la arquitectura de datos hipotética implementada para el proyecto, estructurada bajo el enfoque de **Arquitectura Medallón (Bronce · Plata · Oro)**, complementada con el análisis exploratorio bivariado, el ciclo de modelado MLOps y la capa de consumo gerencial:
+
+![Arquitectura de Datos Hipotética - People Analytics](arquitectura/arquitectura_datos_hipotetica.png)
+
+### Descripción de las Capas del Flujo:
+
+1. **🥉 Capa Bronce (Ingesta & Almacén Crudo):**
+   - **Fuente:** Archivo tabular `HR-Employee-Attrition.csv` (IBM HR Analytics de Kaggle) con 1.470 filas y 35 columnas.
+   - **Calidad & DataOps:** Registro libre de duplicados y nulos. Validación preliminar de esquema y tipos de variables en el almacenamiento de *staging*.
+
+2. **🥈 Capa Plata (Limpieza, Estandarización & Preprocesamiento):**
+   - **Estandarización:** Normalización y traducción de variables al español, depuración de campos constantes sin varianza analítica.
+   - **Ingeniería de Características:** Codificación de 15 variables categóricas mediante `OneHotEncoder(handle_unknown="ignore")` y normalización de 19 numéricas con `StandardScaler`.
+   - **Pipeline Integrado:** Empaquetado de transformaciones en `ColumnTransformer` y división estratificada (80% entrenamiento / 20% prueba con semilla 42).
+
+3. **🔍 Análisis Exploratorio y Bivariado (Cruce Categórico & Patrones):**
+   - Tablas de contingencia y cruces estadísticos para identificar disparidades clave:
+     - **Horas extras:** Casi triplica el riesgo de renuncia (**30,5%** vs. **10,4%**).
+     - **Compromiso laboral:** Nivel bajo escala a **33,7%** de deserción frente a **9,0%** en nivel alto (brecha de 24,7 puntos porcentuales).
+     - **Jerarquía:** Puestos operativos de nivel inicial presentan **26,3%** de rotación frente a **4,7%** en niveles directivos.
+     - **Estado civil:** Colaboradores solteros registran un **25,5%** de rotación, duplicando la tasa de casados (**12,5%**).
+
+4. **🥇 Capa Oro & ML (Modelado Predictivo & Inferencia):**
+   - **Modelo:** Regresión Logística supervisada (`LogisticRegression`) entrenada con semilla reproducible (`random_state=42`).
+   - **Inferencia:** Cálculo de probabilidades calibradas (`predict_proba`) para clasificar el nivel de riesgo de rotación de cada colaborador.
+   - **Evaluación:** Matriz de confusión, ROC-AUC, reporte de métricas y análisis de pesos explicativos de cada variable.
+
+5. **🚀 Capa de Consumo (Dashboard Interactivo & Toma de Decisiones):**
+   - **Visualización:** Aplicación web interactiva desarrollada en **Streamlit** (`python/app.py`).
+   - **Entrega de Valor:** Cuadro de mando con KPIs ejecutivos, filtros dinámicos y tabla priorizada de colaboradores en riesgo, funcionando como una herramienta de apoyo preventivo no determinista para Gestión Humana.
 
 ---
 
